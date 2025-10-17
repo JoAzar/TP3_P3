@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item key="org.eclipse.egit.ui.internal.clone.GitSelectWizardPageWizardSel" value="0"/>
+	<list key="RepositorySelectionPage.UsedUris">
+		<item value="https://github.com/JoAzar/TP2_P3.git"/>
+		<item value="https://github.com/JoAzar/TP1_P3"/>
+	</list>
+	<list key="EGit.KnownHosts">
+		<item value="git.eclipse.org"/>
+		<item value="bitbucket.org"/>
+		<item value="github.com"/>
+	</list>
+	<list key="CommitDialog.authorValues">
+		<item value="JoAzar &lt;joel.zalazar.trabajo@gmail.com&gt;"/>
+	</list>
+	<list key="CommitDialog.committerValues">
+		<item value="JoAzar &lt;joel.zalazar.trabajo@gmail.com&gt;"/>
+	</list>
+	<section name="GitImportWizard">
+		<item key="GitProjectsImportPage.STORE_NESTED_PROJECTS" value="true"/>
+		<section name="GitImportWizard.dialogBounds">
+			<item key="DIALOG_X_ORIGIN" value="292"/>
+			<item key="DIALOG_Y_ORIGIN" value="15"/>
+			<item key="DIALOG_WIDTH" value="788"/>
+			<item key="DIALOG_HEIGHT" value="625"/>
+			<item key="DIALOG_FONT_NAME" value="1|FiraCode Nerd Font|10.5|0|GTK|1|"/>
+		</section>
+	</section>
+	<section name="org.eclipse.egit.ui.internal.staging.StagingView">
+		<item key="MAIN_SASH_FORM_ORIENTATION_VERTICAL" value="false"/>
+		<item key="HORIZONTAL_SASH_FORM_WEIGHT" value="200,200"/>
+		<item key="STAGING_SASH_FORM_WEIGHT" value="200,200"/>
+		<item key="sortItemState" value="false"/>
+	</section>
+	<section name="GitCommitMessageComponent">
+		<list key="/home/red/git/TP2_P3/.git">
+			<item value="false"/>
+			<item value="JoAzar &lt;joel.zalazar.trabajo@gmail.com&gt;"/>
+			<item value="cambios en todo el proyecto, hay que revisar los casos de test"/>
+			<item value="JoAzar &lt;joel.zalazar.trabajo@gmail.com&gt;"/>
+			<item value="3bc7dd68c35b5b7fc0b1c02285725d0d9fa88b7f"/>
+			<item value="0"/>
+			<item value="false"/>
+			<item value=""/>
+		</list>
+	</section>
+</section>
