@@ -1,4 +1,0 @@
-INDEX VERSION 1.134+/home/red/espacio_de_trabajo_java/.metadata/.plugins/org.eclipse.jdt.core
-3968689406.index
-1865797976.index
-1310218363.index
