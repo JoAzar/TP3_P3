@@ -1,10 +1,14 @@
 package main;
 
+import presenter.Presenter;
+import view.View;
+
 public class Main {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+		View vista = new View();
+		Presenter presenter = new Presenter();
+		presenter.inicializarInterfazPresenter(vista);
 	}
 
 }

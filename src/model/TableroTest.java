@@ -4,7 +4,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class TableroTest {
-    Tablero tablero = new Tablero();
+    Tablero tablero = new Tablero(9);
 
     @Test
     public void generarTableroAleatorioCantidad() {

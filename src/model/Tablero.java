@@ -3,13 +3,21 @@ package model;
 import java.util.Random;
 
 public class Tablero {
-	private int _tamanioDeCuadricula = 9;
-	private int _tamanioDelTablero = _tamanioDeCuadricula*_tamanioDeCuadricula;
-	private int[][] _tablero = new int[_tamanioDeCuadricula][_tamanioDeCuadricula];
 	Random _random = new Random();
+	private int _tamanioDeCuadricula;
+	private int _tamanioDelTablero;
+	private int[][] _tablero;
+
+	
+	public Tablero(int tamanio) {
+		_tamanioDeCuadricula = tamanio;
+		_tamanioDelTablero = _tamanioDeCuadricula*_tamanioDeCuadricula;
+		_tablero = new int[_tamanioDeCuadricula][_tamanioDeCuadricula];
+		_random = new Random();
+	}
 	
 	public void generarTableroAleatorioDeValoresIngresados(int cantValores) {
-		verificarCantidadDeValoresIngresadosPorUsuario(cantValores);
+		verificarValor(cantValores);
 		int valoresAsignados = 0;
 		
 		while(valoresAsignados < cantValores) {
@@ -24,18 +32,18 @@ public class Tablero {
 		}
 	}
 	
-	private void verificarCantidadDeValoresIngresadosPorUsuario(int cantValores) {
+	private void verificarValor(int cantValores) {
 		if(cantValores < 1 || cantValores > _tamanioDelTablero) {
 			throw new IllegalArgumentException("Cantidad fuera de rango (1-81)");
 		}
 	}
 	
-	private int crearValorRandom() {
-		return _random.nextInt(_tamanioDeCuadricula);
+	protected boolean celdaVacia(int fila, int columna) {
+		return _tablero[fila][columna] == 0;
 	}
 	
-	private boolean celdaVacia(int fila, int columna) {
-		return _tablero[fila][columna] == 0;
+	private int crearValorRandom() {
+		return _random.nextInt(_tamanioDeCuadricula);
 	}
 	
 	public int getValor(int fila, int columna) {
@@ -54,9 +62,13 @@ public class Tablero {
 		if(columna < 0 || columna > 8) {
 			throw new IllegalArgumentException("Columna: " + columna +" fuera de rango (1-9)");
 		}
-		if(valor < 1 || valor > 9) {
+		if(valor < 0 || valor > 9) {
 			throw new IllegalArgumentException("Valor: " + valor +" fuera de rango (1-9)");
 		}
+	}
+	
+	public int length() {
+		return _tablero.length;
 	}
 	
 	public void vaciar() {
