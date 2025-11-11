@@ -64,7 +64,7 @@ public class View extends JFrame{
         	if(input != null && !input.isEmpty()) {
         		try {
         			int cantidadDePistas = Integer.parseInt(input);
-        			if(cantidadDePistas < 0 || cantidadDePistas > 81) {
+        			if(cantidadDePistas < 1 || cantidadDePistas > 81) {
         				mostrarMensaje("Debe ingresar un número válido");
         			}else{
         				_listener.crearSudokuAleatorioConPistas(cantidadDePistas);

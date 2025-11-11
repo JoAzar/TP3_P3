@@ -1,5 +1,4 @@
 package presenter;
-
 import model.Tablero;
 import model.Backtracking;
 import view.View;
@@ -19,6 +18,8 @@ public class Presenter implements ViewListener {
     
     @Override
     public String verificarValidezDelTableroConMensaje() {
+    	if (_backtracking == null)
+            _backtracking = new Backtracking(_tablero);
     	String salidaDeLaVerificacionDelTablero = _backtracking.verificarTableroValidoConMensaje();
     	return salidaDeLaVerificacionDelTablero;
     	
@@ -50,7 +51,8 @@ public class Presenter implements ViewListener {
 	}
 
     private boolean resolver() {
-        _backtracking = new Backtracking(_tablero);
+    	if(_backtracking == null)
+    		_backtracking = new Backtracking(_tablero);
         return _backtracking.resolverSudoku();
     }
     
@@ -62,7 +64,6 @@ public class Presenter implements ViewListener {
         resolver();
         int[][] tableroResuelto = _backtracking.getTablero();
         int celdasAEliminar = 81 - cantPistas;
-
         java.util.Random random = new java.util.Random();
         while(celdasAEliminar > 0) {
             int fila = random.nextInt(9);
