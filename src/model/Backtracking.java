@@ -23,14 +23,24 @@ public class Backtracking {
 		for(int fila = 0; fila < _tablero.length(); fila++) {
 			for(int columna = 0; columna < _tablero.length(); columna++) {
 				actualizarVariables(fila, columna);
-				
-				if(_valorDeCelda != 0 && (valorDuplicadoEnFila() || valorDuplicadoEnColumna()
-						|| valorDuplicadoEnCuadricula())) {
-					return false;
-				}
+				System.out.println(_valorDeCelda);
+				if(_valorDeCelda != 0 && (valorDuplicadoEnFila() || valorDuplicadoEnColumna())) return false;
 			}
 		}
 		return true;
+	}
+	
+	public String verificarTableroValidoConMensaje() {
+		for(int fila = 0; fila < _tablero.length(); fila++) {
+			for(int columna = 0; columna < _tablero.length(); columna++) {
+	            actualizarVariables(fila, columna);
+	            if(_valorDeCelda == 0)
+	            	return "El tablero tiene celdas vacías";
+	            if(_valorDeCelda != 0 && (valorDuplicadoEnFila() || valorDuplicadoEnColumna()))
+	            	return "El tablero no es válido, hay valores duplicados";
+	        }
+	    }
+	    return "Tablero válido";
 	}
 	
 	private void actualizarVariables(int fila, int columna) {
@@ -42,25 +52,14 @@ public class Backtracking {
 	}
 	
 	protected boolean valorDuplicadoEnFila() {
-		for(int numAChequear = 0; numAChequear < _tablero.length(); numAChequear++) {
+		for(int numAChequear = 0; numAChequear < _tablero.length(); numAChequear++)
 			if(existeValorRepetidoEnFila(numAChequear)) return true;
-		}
 		return false;
 	}
 	
 	protected boolean valorDuplicadoEnColumna() {
-		for(int numAChequear = 0; numAChequear < _tablero.length(); numAChequear++) {
+		for(int numAChequear = 0; numAChequear < _tablero.length(); numAChequear++)
 			if(existeValorRepetidoEnColumna(numAChequear)) return true;
-		}
-		return false;
-	}
-	
-	protected boolean valorDuplicadoEnCuadricula() {
-		for(int i = _subFila; i < _subFila + 3; i++) {
-			for(int j = _subColumna; j < _subColumna + 3; j++) {
-				if(existeValorRepetidoSubfilasOSubcolumnas(i, j)) return true;
-			}
-		}
 		return false;
 	}
 	
@@ -73,27 +72,17 @@ public class Backtracking {
 		return valorAChequear != _fila && _tablero.getValor(valorAChequear, _columna) == _valorDeCelda;
 	}
 	
-	protected boolean existeValorRepetidoSubfilasOSubcolumnas(int i, int j) {
-		return (i != _fila || j != _columna) && _tablero.getValor(i, j) == _valorDeCelda;
-	}
-	
 	private boolean resolver(int fila, int columna) {
-		if(fila == 9) {
-			return true;
-		}
+		if(fila == 9) return true;
 		
-		if(!_tablero.celdaVacia(fila, columna)) {
+		if(!_tablero.celdaVacia(fila, columna))
 			return resolver(siguienteFila(fila, columna), siguienteColumna(columna));
-		}
 		
 		for(int num = 1; num <= 9; num++) {
 			if(numEsValido(fila, columna, num)) {
 				_tablero.setValor(fila, columna, num);
 				
-				if(resolver(siguienteFila(fila, columna), siguienteColumna(columna))) {
-					return true;
-				}
-				
+				if(resolver(siguienteFila(fila, columna), siguienteColumna(columna))) return true;
 				_tablero.setValor(fila, columna, 0);
 			}
 		}
@@ -117,9 +106,8 @@ public class Backtracking {
 	
 	protected boolean validarFila(int fila, int columna, int valor) {
 		for(int c = 0; c < 9; c++) {
-			if(c != columna && _tablero.getValor(fila, c) == valor) {
+			if(c != columna && _tablero.getValor(fila, c) == valor)
 				return true;
-			}
 		}
 		return false;
 	}
@@ -149,5 +137,4 @@ public class Backtracking {
 	public int[][] getTablero() {
 	    return _tablero.getTablero();
 	}
-	
 }

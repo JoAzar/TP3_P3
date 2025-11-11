@@ -16,11 +16,17 @@ public class Presenter implements ViewListener {
         _tablero = new Tablero(9);
         _vista.crearListener(this);
     }
+    
+    @Override
+    public String verificarValidezDelTableroConMensaje() {
+    	String salidaDeLaVerificacionDelTablero = _backtracking.verificarTableroValidoConMensaje();
+    	return salidaDeLaVerificacionDelTablero;
+    	
+    }
 
 	@Override
 	public boolean resolverSudoku(JTextField[][] celdas) {
 		actualizarTableroPresenterPor(celdas);
-		
 		if(resolver()) {
 			_vista.mostrarTablero(_backtracking.getTablero());
 			return true;
@@ -30,17 +36,15 @@ public class Presenter implements ViewListener {
 		}
 	}
 	
-	private void actualizarTableroPresenterPor(JTextField[][] celdas) {
+	private void actualizarTableroPresenterPor(JTextField[][] celdas) {	
 		for(int f = 0; f < celdas.length; f++) {
 			for(int c = 0; c < celdas.length; c++) {
+	           //System.out.println(_tablero.getValor(f, c));
 				String num = celdas[f][c].getText();
-				
-				if(!num.isEmpty()) {
+				if(!num.isEmpty())
 					_tablero.setValor(f, c, Integer.parseInt(num));
-				}
-				else {
+				else
 					_tablero.setValor(f, c, 0);
-				}
 			}
 		}
 	}
@@ -53,17 +57,18 @@ public class Presenter implements ViewListener {
     @Override
     public void crearSudokuAleatorioConPistas(int cantPistas) {
         _tablero.vaciar();
+        _tablero.generarTableroAleatorioDeValoresIngresados(cantPistas);
         
         resolver();
         int[][] tableroResuelto = _backtracking.getTablero();
         int celdasAEliminar = 81 - cantPistas;
 
         java.util.Random random = new java.util.Random();
-        while (celdasAEliminar > 0) {
+        while(celdasAEliminar > 0) {
             int fila = random.nextInt(9);
             int columna = random.nextInt(9);
 
-            if (tableroResuelto[fila][columna] != 0) {
+            if(tableroResuelto[fila][columna] != 0) {
                 tableroResuelto[fila][columna] = 0;
                 celdasAEliminar--;
             }

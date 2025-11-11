@@ -26,6 +26,7 @@ public class Tablero {
 			
 			if(celdaVacia(fila, columna)) {
 				int valorRandomDistintoDeCero = crearValorRandom() + 1;
+				System.out.println(valorRandomDistintoDeCero);
 				_tablero[fila][columna] = valorRandomDistintoDeCero;
 				valoresAsignados++;
 			}
