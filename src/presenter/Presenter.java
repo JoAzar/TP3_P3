@@ -8,7 +8,6 @@ import javax.swing.JTextField;
 public class Presenter implements ViewListener {
     private View _vista;
     private Tablero _tablero;
-    private Backtracking _backtracking;
 
     public void inicializarInterfazPresenter(View vista) {
         _vista = vista;
@@ -17,72 +16,43 @@ public class Presenter implements ViewListener {
     }
     
     @Override
-    public String verificarValidezDelTableroConMensaje() {
-    	if (_backtracking == null)
-            _backtracking = new Backtracking(_tablero);
-    	String salidaDeLaVerificacionDelTablero = _backtracking.verificarTableroValidoConMensaje();
-    	return salidaDeLaVerificacionDelTablero;
-    	
+    public String verificarValidezDelTableroConMensaje(JTextField[][] celdas) {
+    	actualizarTableroPresenterPor(celdas);
+    	Backtracking backtracking = new Backtracking(_tablero);
+    	return backtracking.verificarTableroValidoConMensaje();
     }
 
 	@Override
 	public boolean resolverSudoku(JTextField[][] celdas) {
 		actualizarTableroPresenterPor(celdas);
-		if(resolver()) {
-			_vista.mostrarTablero(_backtracking.getTablero());
-			return true;
-		}
-		else {
-			return false;
-		}
+		Backtracking backtracking = new Backtracking(_tablero);
+		boolean resolucionDeExito = backtracking.resolverSudoku();
+			if(resolucionDeExito) _vista.mostrarTablero(backtracking.getTableroResuelto());
+		return resolucionDeExito;
 	}
 	
 	private void actualizarTableroPresenterPor(JTextField[][] celdas) {	
-		for(int f = 0; f < celdas.length; f++) {
-			for(int c = 0; c < celdas.length; c++) {
-	           //System.out.println(_tablero.getValor(f, c));
-				String num = celdas[f][c].getText();
-				if(!num.isEmpty())
-					_tablero.setValor(f, c, Integer.parseInt(num));
-				else
-					_tablero.setValor(f, c, 0);
+		for(int fila = 0; fila < celdas.length; fila++) {
+			for(int columna = 0; columna < celdas.length; columna++) {
+				String num = celdas[fila][columna].getText();
+	            _tablero.setValor(fila, columna, num.isEmpty() ? 0 : Integer.parseInt(num));
 			}
 		}
 	}
-
-    private boolean resolver() {
-    	if(_backtracking == null)
-    		_backtracking = new Backtracking(_tablero);
-        return _backtracking.resolverSudoku();
-    }
     
     @Override
     public void crearSudokuAleatorioConPistas(int cantPistas) {
         _tablero.vaciar();
         _tablero.generarTableroAleatorioDeValoresIngresados(cantPistas);
-        
-        resolver();
-        int[][] tableroResuelto = _backtracking.getTablero();
-        int celdasAEliminar = 81 - cantPistas;
-        java.util.Random random = new java.util.Random();
-        while(celdasAEliminar > 0) {
-            int fila = random.nextInt(9);
-            int columna = random.nextInt(9);
-
-            if(tableroResuelto[fila][columna] != 0) {
-                tableroResuelto[fila][columna] = 0;
-                celdasAEliminar--;
-            }
-        }
-
-        _vista.mostrarTablero(tableroResuelto);
+        _vista.mostrarTablero(_tablero.getTablero());
         _vista.mostrarMensaje("Sudoku generado con " + cantPistas + " pistas.");
     }
     
     @Override
     public void mostrarSolucion() {
-        resolver();
-        _vista.mostrarTablero(_backtracking.getTablero());
+    	Backtracking backtracking = new Backtracking(_tablero);
+    	backtracking.resolverSudoku();       
+        _vista.mostrarTablero(backtracking.getTableroResuelto());
     }
 
 }

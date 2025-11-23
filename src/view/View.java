@@ -6,7 +6,7 @@ import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.text.NumberFormat;
 
-public class View extends JFrame{
+public class View extends JFrame {
 	private JPanel _panelPrincipal;
 	private JPanel _contenedorBotones;
 	private JPanel _panelMenu;
@@ -21,17 +21,14 @@ public class View extends JFrame{
     }
     
     private void initialize() {
-        setTitle("Resolución de Sudokus");
+        setTitle("< Juegazos.coso >");
 		setBounds(100, 100, 600, 560); 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
         _panelPrincipal = new JPanel(new CardLayout());
         getContentPane().add(_panelPrincipal);
-        
         crearMenuPrincipal();
         crearTablero();
         mostrarPantalla("menu");
-        
         setVisible(true);
     }
     
@@ -39,65 +36,221 @@ public class View extends JFrame{
     	_panelMenu = new JPanel();
     	_panelMenu.setLayout(null);
     	
-        JTextPane txtMenu = new JTextPane();
-        txtMenu.setEditable(false);
-        txtMenu.setBounds(143, 138, 311, 47);
-        txtMenu.setBackground(UIManager.getColor("Button.background"));
-        txtMenu.setFont(new Font("Arial Black", Font.BOLD, 30));
-        txtMenu.setText("Sudoku Game");
-        _panelMenu.add(txtMenu);
+        JTextPane tituloDelInicioDelJuego = new JTextPane();
+        noPermitirSenialarSobreElPanel(tituloDelInicioDelJuego);
+        configurarTamanioDelTituloDeInicioDelJuego(tituloDelInicioDelJuego);
+        _panelMenu.add(tituloDelInicioDelJuego);
         
         JButton btnTableroVacio = new JButton("Tablero vacío");
-        btnTableroVacio.setBounds(207, 261, 173, 47);
-        btnTableroVacio.setFont(new Font("Arial", Font.BOLD, 14));
-        btnTableroVacio.addActionListener(e -> {
-        	setModoAleatorio(false);
-        	mostrarPantalla("tablero");
-        });
+        configurarTamanioDelBotonTableroVacio(btnTableroVacio);
+        accionDelBotonTableroVacio(btnTableroVacio);
+        
         _panelMenu.add(btnTableroVacio);
         JButton btnSudokuRandom = new JButton("Sudoku aleatorio");
-        btnSudokuRandom.setBounds(193, 342, 202, 54);
-        btnSudokuRandom.setFont(new Font("Arial", Font.BOLD, 14));
-        btnSudokuRandom.addActionListener(e -> {
-        	String input = JOptionPane.showInputDialog(this, "Ingrese la cantidad de pistas (1 a 81):");
-        	
-        	if(input != null && !input.isEmpty()) {
-        		try {
-        			int cantidadDePistas = Integer.parseInt(input);
-        			if(cantidadDePistas < 1 || cantidadDePistas > 81) {
-        				mostrarMensaje("Debe ingresar un número válido");
-        			}else{
-        				_listener.crearSudokuAleatorioConPistas(cantidadDePistas);
-            			_listener.verificarValidezDelTableroConMensaje();
-            			setModoAleatorio(true);
-            			mostrarPantalla("tablero");
-        			}
-        			
-        		} catch (NumberFormatException ex) {
-        			mostrarMensaje("Debe ingresar un número válido");
-                }
-        	}
-        });
+        configurarTamanioDelBotonDeTableroSudokuRandom(btnSudokuRandom);
+        accionDelBotonDeTableroSudokuRandom(btnSudokuRandom);
         _panelMenu.add(btnSudokuRandom);
+        
         _panelPrincipal.add(_panelMenu, "menu");
     }
     
-    private void crearTablero() {
+    private void accionDelBotonTableroVacio(JButton btnTableroVacio) {
+    	btnTableroVacio.addActionListener(e -> {
+        	setModoAleatorio(false);
+        	mostrarPantalla("tablero");
+        });		
+	}
+    
+    private void accionDelBotonDeTableroSudokuRandom(JButton btnSudokuRandom) {
+    	btnSudokuRandom.addActionListener(e -> {
+            String input = JOptionPane.showInputDialog(this, "Ingrese la cantidad de pistas (1 a 81):");
+            	if(input != null && !input.isEmpty()) {
+            		try {
+            			int cantidadDePistas = Integer.parseInt(input);
+            			if(cantidadDePistas < 1 || cantidadDePistas > 81) {
+            				mostrarMensaje("Debe ingresar un número válido");
+            			}else{
+            				_listener.crearSudokuAleatorioConPistas(cantidadDePistas);
+                			setModoAleatorio(true);
+                			mostrarPantalla("tablero");
+            			}
+            			
+            		} catch (NumberFormatException ex) {
+            			mostrarMensaje("Debe ingresar un número válido");
+                    }
+            	}
+            });		
+	}
+
+	private void configurarTamanioDelBotonDeTableroSudokuRandom(JButton btnSudokuRandom) {
+    	btnSudokuRandom.setBounds(193, 342, 202, 54);
+        btnSudokuRandom.setFont(new Font("Arial", Font.BOLD, 14));		
+	}
+
+	private void configurarTamanioDelTituloDeInicioDelJuego(JTextPane tituloDelInicioDelJuego) {
+        tituloDelInicioDelJuego.setBounds(143, 138, 311, 60);
+        tituloDelInicioDelJuego.setContentType("text/html");
+		tituloDelInicioDelJuego.setText(
+		    "<html>"
+		  + "<div style='text-align:center; "
+		  + "font-family:Arial Black; font-size:35px; font-weight:bold;"
+		  + "background-color: black; "
+		  + "color: white;'>"
+		  + "Sudoku"
+		  + "</div>"
+		  + "</html>"
+		);
+        tituloDelInicioDelJuego.setOpaque(true);
+        tituloDelInicioDelJuego.setBackground(UIManager.getColor("Button.background"));
+        tituloDelInicioDelJuego.setAlignmentX(CENTER_ALIGNMENT);
+        tituloDelInicioDelJuego.setAlignmentY(CENTER_ALIGNMENT);
+	}
+
+	private void crearTablero() {
     	_panelTablero = new JPanel();
     	_panelTablero.setLayout(new BorderLayout());
     	_panelTablero.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
     	
-    	JPanel panelCentro = new JPanel(new GridLayout(9, 9));
-    	panelCentro.setPreferredSize(new Dimension(450, 450));
-    	panelCentro.setBackground(Color.BLACK);
+    	JPanel panelCentral = new JPanel(new GridLayout(9, 9));
+    	configurarTamanioDelPanelCentral(panelCentral);
+    	armarCuadroDelTablero(panelCentral);
     	
-    	NumberFormat formato = NumberFormat.getIntegerInstance();
+    	_panelBtnManual = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+    	
+    	JButton btnResolverTablero = new JButton("Resolver tablero");
+    	configurarTamanioDeBotonResolverTablero(btnResolverTablero);
+    	accionDelBotonResolverTablero(btnResolverTablero);
+    	noPermitirSenialarSobreElBoton(btnResolverTablero);
+    	
+    	JButton btnVerificar = new JButton("Verificar tablero");
+    	configurarTamanioDeBotonVerificarTablero(btnVerificar);
+    	accionDelBotonVerificarTablero(btnVerificar);
+    	noPermitirSenialarSobreElBoton(btnVerificar);
+
+    	JButton btnVolverAlMenuDeInicio = new JButton("Menú principal");
+    	configurarTamanioDelBotonVolver(btnVolverAlMenuDeInicio);
+    	accionDelBotonVolverAlTablero(btnVolverAlMenuDeInicio);
+    	noPermitirSenialarSobreElBoton(btnVolverAlMenuDeInicio);
+    	
+    	construirPanelParaTableroAleatorio(btnResolverTablero, btnVolverAlMenuDeInicio);
+    	
+    	_panelDeOpcionDeTableroAleatorio = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+    	
+    	JButton btnMostrarSolucion = new JButton("Mostrar solución");
+    	accionDelBotonMostrarSolucion(btnMostrarSolucion);
+    	noPermitirSenialarSobreElBoton(btnMostrarSolucion);
+    	
+    	JButton randomBtnVolver = new JButton("Menú principal");
+    	configurarTamanioDelBotonVolverDelTableroRandom(randomBtnVolver);
+    	accionDelBotonVolverDelTableroRandom(randomBtnVolver);
+    	noPermitirSenialarSobreElBoton(randomBtnVolver);
+
+    	JButton botonParaVerificarTablero = new JButton("Verificar el tablero");
+    	accionDelBotonVerificarTableroRandom(botonParaVerificarTablero);
+    	noPermitirSenialarSobreElBoton(botonParaVerificarTablero);
+        
+    	construirPanelParaTableroAleatorio(btnMostrarSolucion, randomBtnVolver, botonParaVerificarTablero);
+
+        _contenedorBotones = new JPanel(new CardLayout());
+        _contenedorBotones.add(_panelBtnManual, "tablero vacío");
+        _contenedorBotones.add(_panelDeOpcionDeTableroAleatorio, "tablero aleatorio");
+        
+    	_panelTablero.add(panelCentral, BorderLayout.CENTER);
+    	_panelTablero.add(_contenedorBotones, BorderLayout.SOUTH);
+    	_panelPrincipal.add(_panelTablero, "tablero");
+    }
+	
+	private void construirPanelParaTableroAleatorio(JButton btnResolverTablero, JButton btnVolverAlMenuDeInicio) {
+		_panelBtnManual.add(btnResolverTablero);
+    	_panelBtnManual.add(btnVolverAlMenuDeInicio);		
+	}
+
+	private void construirPanelParaTableroAleatorio(JButton btnMostrarSolucion, JButton randomBtnVolver, JButton botonParaVerificarTablero) {
+		_panelDeOpcionDeTableroAleatorio.add(btnMostrarSolucion);
+    	_panelDeOpcionDeTableroAleatorio.add(randomBtnVolver);
+    	_panelDeOpcionDeTableroAleatorio.add(botonParaVerificarTablero);
+	}
+
+	private void accionDelBotonVerificarTableroRandom(JButton botonParaVerificarTableroRandom) {
+		botonParaVerificarTableroRandom.addActionListener(e -> {
+	        String mensajeVerificacion = _listener.verificarValidezDelTableroConMensaje(_celdas);
+	        if("Tablero válido".equals(mensajeVerificacion)) {
+	            boolean resuelto = _listener.resolverSudoku(_celdas);
+	            mensajeVerificacion = resuelto ? "Tablero resuelto correctamente" : "Los valores ingresados no pertenecen a un tablero válido";
+	        }
+	        msjDelResultadoDeLaVerificacionDelTablero(mensajeVerificacion);
+	    });	
+	}
+
+	private void accionDelBotonVolverDelTableroRandom(JButton randomBtnVolver) {
+		randomBtnVolver.addActionListener(e -> {
+    		limpiarTablero();
+    		mostrarPantalla("menu");
+    	});		
+	}
+
+	private void configurarTamanioDelBotonVolverDelTableroRandom(JButton randomBtnVolver) {
+		randomBtnVolver.setFont(new Font("Arial", Font.BOLD, 12));		
+	}
+
+	private void accionDelBotonMostrarSolucion(JButton btnMostrarSolucion) {
+		btnMostrarSolucion.addActionListener(e -> _listener.mostrarSolucion());		
+	}
+
+	private void accionDelBotonVolverAlTablero(JButton manualBtnVolver) {
+		manualBtnVolver.addActionListener(e -> {
+    		limpiarTablero();
+    		mostrarPantalla("menu");
+    	});		
+	}
+
+	private void accionDelBotonVerificarTablero(JButton btnVerificar) {
+		btnVerificar.addActionListener(e -> { _listener.verificarValidezDelTableroConMensaje(_celdas);});		
+	}
+
+	private void configurarTamanioDeBotonVerificarTablero(JButton btnVerificar) {
+		btnVerificar.setFont(new Font("Arial", Font.BOLD, 12));		
+	}
+
+	private void configurarTamanioDeBotonResolverTablero(JButton btnResolverTablero) {
+		btnResolverTablero.setFont(new Font("Arial", Font.BOLD, 12));		
+	}
+
+	private void accionDelBotonResolverTablero(JButton btnResolverTablero) {
+		btnResolverTablero.addActionListener(e -> {
+	        boolean resuelto = _listener.resolverSudoku(_celdas);
+	        String mensaje = resuelto ? "Tablero resuelto correctamente" : "El tablero no se puede resolver";
+	        msjDelResultadoDeLaVerificacionDelTablero(mensaje);
+	    });
+	}
+	
+	private void noPermitirSenialarSobreElPanel(JTextPane panelSeleccionado) {
+		panelSeleccionado.setEditable(false);   
+		panelSeleccionado.setHighlighter(null);
+		panelSeleccionado.setFocusable(false);
+	}
+    
+    private void configurarTamanioDelPanelCentral(JPanel panelCentral) {
+    	panelCentral.setPreferredSize(new Dimension(450, 450));
+    	panelCentral.setBackground(Color.BLACK);		
+	}
+
+    private void configurarTamanioDelBotonVolver(JButton manualBtnVolver) {
+    	manualBtnVolver.setFont(new Font("Arial", Font.BOLD, 12));
+	}
+    
+    private void configurarTamanioDelBotonTableroVacio(JButton btnTableroVacio) {
+    	btnTableroVacio.setBounds(207, 261, 173, 47);
+        btnTableroVacio.setFont(new Font("Arial", Font.BOLD, 14));
+	} 
+
+	private void armarCuadroDelTablero(JPanel panelCentro) {
+		NumberFormat formato = NumberFormat.getIntegerInstance();
     	NumberFormatter formatter = new NumberFormatter(formato);
     	formatter.setValueClass(Integer.class);
     	formatter.setMinimum(1);
     	formatter.setMaximum(9);
     	formatter.setAllowsInvalid(true);
-
     	for(int fila = 0; fila < 9; fila++) {
     	    for(int columna = 0; columna < 9; columna++) {
     	        JFormattedTextField celda = new JFormattedTextField(formatter);
@@ -112,68 +265,15 @@ public class View extends JFrame{
     	        panelCentro.add(celda);
     	    }
     	}
-    	
-    	_panelBtnManual = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-    	JButton btnResolver = new JButton("Resolver tablero");
-    	btnResolver.setFont(new Font("Arial", Font.BOLD, 12));
-    	
-    	btnResolver.addActionListener(e -> {
-    		String mensaje = _listener.verificarValidezDelTableroConMensaje();
-    		if(mensaje == "Tablero válido") {
-    			if(_listener.resolverSudoku(_celdas))
-    	            mensaje = _listener.verificarValidezDelTableroConMensaje();
-            msjDelResultadoDeLaVerificacionDelTablero(mensaje);
-    		}
-    	});
-    	
-    	JButton btnVerificar = new JButton("Verificar tablero");
-    	btnVerificar.setFont(new Font("Arial", Font.BOLD, 12));
-    	btnVerificar.addActionListener(e -> {
-    	});
-
-    	JButton manualBtnVolver = new JButton("Menú principal");
-    	manualBtnVolver.setFont(new Font("Arial", Font.BOLD, 12));
-    	manualBtnVolver.addActionListener(e -> {
-    		limpiarTablero();
-    		mostrarPantalla("menu");
-    	});
-    	
-    	_panelBtnManual.add(btnResolver);
-    	_panelBtnManual.add(manualBtnVolver);    	
-    	_panelDeOpcionDeTableroAleatorio = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-
-    	JButton btnMostrarSolucion = new JButton("Mostrar solución");
-    	btnMostrarSolucion.addActionListener(e -> _listener.mostrarSolucion());
-    	
-    	JButton randomBtnVolver = new JButton("Menú principal");
-    	randomBtnVolver.setFont(new Font("Arial", Font.BOLD, 12));
-    	randomBtnVolver.addActionListener(e -> {
-    		limpiarTablero();
-    		mostrarPantalla("menu");
-    	});
-    	
-    	JButton botonParaVerificarTablero = new JButton("Verificar el tablero");
-        botonParaVerificarTablero.addActionListener(e -> {
-	      String mensaje = _listener.verificarValidezDelTableroConMensaje();
-	        msjDelResultadoDeLaVerificacionDelTablero(mensaje);
-        });
-    	
-    	_panelDeOpcionDeTableroAleatorio.add(btnMostrarSolucion);
-    	_panelDeOpcionDeTableroAleatorio.add(randomBtnVolver);
-    	_panelDeOpcionDeTableroAleatorio.add(botonParaVerificarTablero);
-
-        _contenedorBotones = new JPanel(new CardLayout());
-        _contenedorBotones.add(_panelBtnManual, "manual");
-        _contenedorBotones.add(_panelDeOpcionDeTableroAleatorio, "aleatorio");
-        
-    	_panelTablero.add(panelCentro, BorderLayout.CENTER);
-    	_panelTablero.add(_contenedorBotones, BorderLayout.SOUTH);
-    	_panelPrincipal.add(_panelTablero, "tablero");
     }
     
+    private void noPermitirSenialarSobreElBoton(JButton panelSeleccionado) {
+		panelSeleccionado.setFocusable(false);
+	}
+    
     private void mostrarPantalla(String pantalla) {
-    	CardLayout cl = (CardLayout) (_panelPrincipal.getLayout());
-    	cl.show(_panelPrincipal, pantalla);
+    	CardLayout cardlayout = (CardLayout) (_panelPrincipal.getLayout());
+    	cardlayout.show(_panelPrincipal, pantalla);
     }
     
     private void limpiarTablero() {
@@ -182,23 +282,24 @@ public class View extends JFrame{
     }
     
     public void mostrarTablero(int[][] tablero) {
-        for (int f = 0; f < tablero.length; f++) {
-        	for (int c = 0; c < tablero.length; c++) {
-        		int valor = tablero[f][c];
-        		if (valor == 0) _celdas[f][c].setText("");
-        		else _celdas[f][c].setText(String.valueOf(valor));
-                _celdas[f][c].setEditable(false);
+        for(int fila = 0; fila < tablero.length; fila++) {
+        	for(int columna = 0; columna < tablero.length; columna++) {
+        		int valor = tablero[fila][columna];
+        		if(valor == 0) 
+        			_celdas[fila][columna].setText("");
+        		else 
+        			_celdas[fila][columna].setText(String.valueOf(valor));
+                	_celdas[fila][columna].setEditable(false);
         	}
         }
     }
     
     private void setModoAleatorio(boolean esAleatorio) {
-    	CardLayout cl = (CardLayout) _contenedorBotones.getLayout();
-    	cl.show(_contenedorBotones, esAleatorio ? "aleatorio": "manual");
-        for (int f = 0; f < 9; f++) {
-            for (int c = 0; c < 9; c++) {
-                _celdas[f][c].setEditable(true);
-            }
+    	CardLayout cardlayout = (CardLayout) _contenedorBotones.getLayout();
+    	cardlayout.show(_contenedorBotones, esAleatorio ? "tablero aleatorio": "tablero vacío");
+        for(int fila = 0; fila < 9; fila++) {
+            for(int columna = 0; columna < 9; columna++)
+                _celdas[fila][columna].setEditable(true);
         }
     }
 
@@ -211,7 +312,7 @@ public class View extends JFrame{
     }
     
     public void msjDelResultadoDeLaVerificacionDelTablero(String mensaje) {
-        JOptionPane.showMessageDialog(null, mensaje, "Resultado de la Verificación", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, mensaje, "El tablero es ", JOptionPane.INFORMATION_MESSAGE);
     }
     
 }

@@ -6,6 +6,5 @@ public interface ViewListener {
 	boolean resolverSudoku(JTextField[][] celdas);
 	void crearSudokuAleatorioConPistas(int cantPistas);
 	public void mostrarSolucion();
-	String verificarValidezDelTableroConMensaje();
-
+	String verificarValidezDelTableroConMensaje(JTextField[][] celdas);
 }
