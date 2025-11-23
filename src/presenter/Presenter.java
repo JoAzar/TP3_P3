@@ -22,14 +22,21 @@ public class Presenter implements ViewListener {
     	return backtracking.verificarTableroValidoConMensaje();
     }
 
-	@Override
-	public boolean resolverSudoku(JTextField[][] celdas) {
-		actualizarTableroPresenterPor(celdas);
-		Backtracking backtracking = new Backtracking(_tablero);
-		boolean resolucionDeExito = backtracking.resolverSudoku();
-			if(resolucionDeExito) _vista.mostrarTablero(backtracking.getTableroResuelto());
-		return resolucionDeExito;
-	}
+    @Override
+    public boolean resolverSudoku(JTextField[][] celdas) {
+        actualizarTableroPresenterPor(celdas);
+        Backtracking backtracking = new Backtracking(_tablero);
+
+        String mensajeValidez = backtracking.verificarTableroValidoConMensaje();
+        if (!"Tablero válido".equals(mensajeValidez)) {
+            _vista.mostrarMensaje(mensajeValidez);
+            return false;
+        }
+
+        boolean resolucionDeExito = backtracking.resolverSudoku();
+        if (resolucionDeExito) _vista.mostrarTablero(backtracking.getTableroResuelto());
+        return resolucionDeExito;
+    }
 	
 	private void actualizarTableroPresenterPor(JTextField[][] celdas) {	
 		for(int fila = 0; fila < celdas.length; fila++) {
