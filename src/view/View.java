@@ -2,7 +2,7 @@ package view;
 
 import javax.swing.*;
 import javax.swing.text.NumberFormatter;
-
+import java.util.List;
 import java.awt.*;
 import java.text.NumberFormat;
 
@@ -15,6 +15,9 @@ public class View extends JFrame {
     private JPanel _panelDeOpcionDeTableroAleatorio;
 	private ViewListener _listener;
     private JTextField[][] _celdas = new JTextField[9][9];
+    private JList<String> listaSoluciones;
+    private DefaultListModel<String> modeloLista;
+    private List<int [][]>solucionesActuales;
     
     public View() {
 		initialize();
@@ -314,5 +317,31 @@ public class View extends JFrame {
     public void msjDelResultadoDeLaVerificacionDelTablero(String mensaje) {
         JOptionPane.showMessageDialog(null, mensaje, "El tablero es ", JOptionPane.INFORMATION_MESSAGE);
     }
+    public void mostrarListaDeSoluciones(List<int[][]> soluciones) {
+        this.solucionesActuales = soluciones;
+
+        JDialog ventana = new JDialog(this, "Soluciones", false);
+        ventana.setSize(250, 400);
+        ventana.setLayout(new BorderLayout());
+
+        modeloLista = new DefaultListModel<>();
+
+        for (int i = 0; i < soluciones.size(); i++) {
+            modeloLista.addElement("Solución " + (i + 1));
+        }
+
+        listaSoluciones = new JList<>(modeloLista);
+
+        listaSoluciones.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int index = listaSoluciones.getSelectedIndex();
+                mostrarTablero(solucionesActuales.get(index));
+            }
+        });
+
+        ventana.add(new JScrollPane(listaSoluciones), BorderLayout.CENTER);
+        ventana.setVisible(true);
+    }
+
     
 }
