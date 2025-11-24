@@ -132,4 +132,83 @@ public class Backtracking {
     public int[][] getTableroResuelto() {
         return tablero.getTablero();
     }
+    public boolean valorDuplicadoEnFila() {
+        for (int fila = 0; fila < 9; fila++)
+            if (existeValorRepetidoEnFila(fila)) return true;
+        return false;
+    }
+
+    public boolean valorDuplicadoEnColumna() {
+        for (int col = 0; col < 9; col++)
+            if (existeValorRepetidoEnColumna(col)) return true;
+        return false;
+    }
+
+    public boolean existeValorRepetidoEnFila(int fila) {
+        boolean[] seen = new boolean[10];
+        for (int col = 0; col < 9; col++) {
+            int v = tablero.getValor(fila, col);
+            if (v != 0) {
+                if (seen[v]) return true;
+                seen[v] = true;
+            }
+        }
+        return false;
+    }
+
+    public boolean existeValorRepetidoEnColumna(int columna) {
+        boolean[] seen = new boolean[10];
+        for (int fila = 0; fila < 9; fila++) {
+            int v = tablero.getValor(fila, columna);
+            if (v != 0) {
+                if (seen[v]) return true;
+                seen[v] = true;
+            }
+        }
+        return false;
+    }
+
+   
+    public boolean validarFila(int fila, int col, int valor) {
+        for (int c = 0; c < 9; c++) {
+            if (c != col && tablero.getValor(fila, c) == valor)
+                return true;
+        }
+        return false;
+    }
+
+    public boolean validarColumna(int fila, int col, int valor) {
+        for (int f = 0; f < 9; f++) {
+            if (f != fila && tablero.getValor(f, col) == valor)
+                return true;
+        }
+        return false;
+    }
+
+    public boolean validarCuadricula(int fila, int col, int valor) {
+        int subFila = (fila / 3) * 3;
+        int subCol = (col / 3) * 3;
+
+        for (int f = subFila; f < subFila + 3; f++) {
+            for (int c = subCol; c < subCol + 3; c++) {
+                if ((f != fila || c != col) && tablero.getValor(f, c) == valor)
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean verificarTableroValido() {
+        for (int fila = 0; fila < 9; fila++) {
+            if (existeValorRepetidoEnFila(fila)) return false;
+        }
+
+        for (int col = 0; col < 9; col++) {
+            if (existeValorRepetidoEnColumna(col)) return false;
+        }
+
+        return true;
+    }
+
+  
 }
