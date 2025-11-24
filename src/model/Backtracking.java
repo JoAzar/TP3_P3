@@ -13,6 +13,7 @@ public class Backtracking {
     }
 
     public boolean resolverSudoku() {
+    	if(!verificarTableroValido()) return false;
         return resolver(0, 0);
     }
 
@@ -199,15 +200,47 @@ public class Backtracking {
     }
 
     public boolean verificarTableroValido() {
-        for (int fila = 0; fila < 9; fila++) {
-            if (existeValorRepetidoEnFila(fila)) return false;
-        }
+    	 for (int fila = 0; fila < 9; fila++) {
+    	        boolean[] visto = new boolean[10];
+    	        for (int col = 0; col < 9; col++) {
+    	            int v = tablero.getValor(fila, col);
+    	            if (v != 0) {
+    	                if (visto[v]) return false;
+    	                visto[v] = true;
+    	            }
+    	        }
+    	    }
 
-        for (int col = 0; col < 9; col++) {
-            if (existeValorRepetidoEnColumna(col)) return false;
-        }
+    	   
+    	    for (int col = 0; col < 9; col++) {
+    	        boolean[] visto = new boolean[10];
+    	        for (int fila = 0; fila < 9; fila++) {
+    	            int v = tablero.getValor(fila, col);
+    	            if (v != 0) {
+    	                if (visto[v]) return false;
+    	                visto[v] = true;
+    	            }
+    	        }
+    	    }
 
-        return true;
+    	    for (int subFila = 0; subFila < 9; subFila += 3) {
+    	        for (int subCol = 0; subCol < 9; subCol += 3) {
+
+    	            boolean[] visto = new boolean[10];
+
+    	            for (int f = subFila; f < subFila + 3; f++) {
+    	                for (int c = subCol; c < subCol + 3; c++) {
+    	                    int v = tablero.getValor(f, c);
+    	                    if (v != 0) {
+    	                        if (visto[v]) return false;
+    	                        visto[v] = true;
+    	                    }
+    	                }
+    	            }
+    	        }
+    	    }
+
+    	    return true;
     }
 
   
