@@ -50,31 +50,9 @@ public class Presenter implements ViewListener {
     
     @Override
     public void mostrarSolucion() {
-<<<<<<< Updated upstream
     	Backtracking backtracking = new Backtracking(_tablero);
     	backtracking.resolverSudoku();       
         _vista.mostrarTablero(backtracking.getTableroResuelto());
-=======
-    	String input = JOptionPane.showInputDialog(null, "¿Cuántas soluciones querés ver?");
-        if (input == null) return;
-        
-        //utilizando expresiones regulares
-        if (!input.matches("\\d+")) {
-            JOptionPane.showMessageDialog(null, "Número inválido");
-            return;
-        }
-        int cantidad= Integer.parseInt(input);
-        
-        Backtracking backtracking = new Backtracking(_tablero);
-        var soluciones = backtracking.resolverVarias(cantidad);
-
-        if (soluciones.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "No hay soluciones.");
-            return;
-        }
-
-        _vista.mostrarListaDeSoluciones(soluciones);
->>>>>>> Stashed changes
     }
 
 }
