@@ -9,7 +9,7 @@ public class Backtracking {
 
     public boolean resolverSudoku() {
         if (!verificarTableroValido()) return false;
-        return resolver();
+        return resolver(0, 0);
     }
 
     public int[][] getTableroResuelto() {
@@ -20,14 +20,8 @@ public class Backtracking {
 		for(int fila = 0; fila < _tablero.length(); fila++) {
 			for(int columna = 0; columna < _tablero.length(); columna++) {
 				int valor = _tablero.getValor(fila, columna);
-                if(valor != 0) {
-                	if(valorDuplicadoEnFila(fila, columna, valor) ||
-                	   valorDuplicadoEnColumna(fila, columna, valor) ||
-                	   valorDuplicadoEnCuadricula(fila, columna, valor)){
-                		return false;
-                	}
-                }
-                    
+                if(valor != 0 && (valorDuplicadoEnFila(fila, columna, valor) || valorDuplicadoEnColumna(fila, columna, valor)))
+                    return false;
 			}
 		}
 		return true;
@@ -37,14 +31,8 @@ public class Backtracking {
 		for(int fila = 0; fila < _tablero.length(); fila++) {
 			for(int columna = 0; columna < _tablero.length(); columna++) {
 	            int valor = _tablero.getValor(fila, columna);
-	            
-	            if(valor!=0) {
-	            	if(valorDuplicadoEnFila(fila, columna, valor) ||
-	            		valorDuplicadoEnColumna(fila, columna, valor) ||
-	            		valorDuplicadoEnCuadricula(fila, columna, valor)) {
-	            	return "El tablero no es válido, hay valores duplicados";
-	            	}
-	            }
+	            if(valor == 0) return "El tablero tiene celdas vacías";
+	            if(valorDuplicadoEnFila(fila, columna, valor) || valorDuplicadoEnColumna(fila, columna, valor)) return "El tablero no es válido, hay valores duplicados";
 	        }
 	    }
 	    return "Tablero válido";
@@ -52,7 +40,7 @@ public class Backtracking {
 	
 	protected boolean valorDuplicadoEnFila(int fila, int columna, int valor) {
 		for(int columnaAChequear = 0; columnaAChequear < _tablero.length(); columnaAChequear++)
-			if(columnaAChequear != columna && _tablero.getValor(fila, columnaAChequear) == valor) return true;;
+			if(columnaAChequear != columna && _tablero.getValor(fila, columnaAChequear) == valor) return true;
 		return false;
 	}
 	
@@ -62,64 +50,19 @@ public class Backtracking {
 		return false;
 	}
 	
-	private boolean resolver() {
-		int[] siguiente = encontrarCeldaConMenosCandidatos();
-        if (siguiente == null) return true; 
-
-        int fila = siguiente[0];
-        int col = siguiente[1];
-        int[] candidatos = obtenerCandidatosArray(fila, col);
-
-        if (candidatos.length == 0) return false; 
-
-        for (int num : candidatos) {
-            _tablero.setValor(fila, col, num);
-            if (resolver()) return true;
-            _tablero.setValor(fila, col, 0);
-        }
-        return false;
+	private boolean resolver(int fila, int columna) {
+		if(fila == 9) return true;
+		if(!_tablero.celdaVacia(fila, columna)) return resolver(siguienteFila(fila, columna), siguienteColumna(columna));
+		for(int num = 1; num <= 9; num++) {
+			if(numEsValido(fila, columna, num)) {
+				_tablero.setValor(fila, columna, num);
+				if(resolver(siguienteFila(fila, columna), siguienteColumna(columna))) return true;
+				_tablero.setValor(fila, columna, 0);
+			}
+		}
+		return false;
 	}
 	
-	private int[] obtenerCandidatosArray(int fila, int col) {
-		java.util.List<Integer> lista = new java.util.ArrayList<>();
-        for (int v = 1; v <= 9; v++) {
-            if (numEsValido(fila, col, v)) lista.add(v);
-        }
-        // convertir a array primitivo
-        int[] arr = new int[lista.size()];
-        for (int i = 0; i < lista.size(); i++) arr[i] = lista.get(i);
-        return arr;
-	}
-
-	private int contarCandidatos(int fila, int col) {
-		  int cnt = 0;
-	        for (int v = 1; v <= 9; v++) {
-	            if (numEsValido(fila, col, v)) cnt++;
-	        }
-	        return cnt;
-	}
-
-	private int[] encontrarCeldaConMenosCandidatos() {
-		int minCount = Integer.MAX_VALUE;
-        int bestFila = -1, bestCol = -1;
-        for (int f = 0; f < _tablero.length(); f++) {
-            for (int c = 0; c < _tablero.length(); c++) {
-                if (_tablero.celdaVacia(f, c)) {
-                    int count = contarCandidatos(f, c);
-                    if (count == 0) return new int[]{f, c}; 
-                    if (count < minCount) {
-                        minCount = count;
-                        bestFila = f;
-                        bestCol = c;
-                        if (minCount == 1) return new int[]{bestFila, bestCol}; 
-                    }
-                }
-            }
-        }
-        if (bestFila == -1) return null;
-        return new int[]{bestFila, bestCol};
-	}
-
 	private int siguienteFila(int fila, int columna) {
 		return (columna == 8) ? fila + 1 : fila;
 	}

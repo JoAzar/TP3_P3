@@ -18,50 +18,21 @@ public class Tablero {
 	
 	public void generarTableroAleatorioDeValoresIngresados(int cantValores) {
 		verificarValor(cantValores);
-        int valoresAsignados = 0;
-        int maxIntentos = cantValores * 200; // para evitar loop infinito
-        int intentos = 0;
-
-        while (valoresAsignados < cantValores && intentos < maxIntentos) {
-            intentos++;
-            int fila = crearValorRandom();
-            int columna = crearValorRandom();
-
-            if (celdaVacia(fila, columna)) {
-                int valorRandomDistintoDeCero = crearValorRandom() + 1;
-                if (puedeColocar(fila, columna, valorRandomDistintoDeCero)) {
-                    _tablero[fila][columna] = valorRandomDistintoDeCero;
-                    valoresAsignados++;
-                }
-            }
-        }
-        if (valoresAsignados < cantValores) {
-                // si no pudo colocar todas las pistas, lanzar excepción para que la UI lo maneje
-                throw new IllegalStateException("No se pudieron generar suficientes pistas válidas (" + valoresAsignados + " de " + cantValores + "). Intenta con menos pistas.");
-            }
-       
+		int valoresAsignados = 0;
+		
+		while(valoresAsignados < cantValores) {
+			int fila = crearValorRandom();
+			int columna = crearValorRandom();
+			
+			if(celdaVacia(fila, columna)) {
+				int valorRandomDistintoDeCero = crearValorRandom() + 1;
+				System.out.println(valorRandomDistintoDeCero);
+				_tablero[fila][columna] = valorRandomDistintoDeCero;
+				valoresAsignados++;
+			}
+		}
 	}
 	
-	private boolean puedeColocar(int fila, int col, int valor) {
-		for (int c = 0; c < _tablero.length; c++) {
-            if (c != col && _tablero[fila][c] == valor) return false;
-        }
-        // columna
-        for (int r = 0; r < _tablero.length; r++) {
-            if (r != fila && _tablero[r][col] == valor) return false;
-        }
-        // subcuadricula 3x3
-        int subFila = (fila / 3) * 3;
-        int subCol = (col / 3) * 3;
-        for (int f = subFila; f < subFila + 3; f++) {
-            for (int c = subCol; c < subCol + 3; c++) {
-                if ((f != fila || c != col) && _tablero[f][c] == valor) return false;
-            }
-        }
-        return true;
-    }
-	
-
 	private void verificarValor(int cantValores) {
 		if(cantValores < 1 || cantValores > _tamanioDelTablero) {
 			throw new IllegalArgumentException("Cantidad fuera de rango (1-81)");
