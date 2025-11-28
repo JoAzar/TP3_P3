@@ -3,8 +3,6 @@ import model.Tablero;
 import model.Backtracking;
 import view.View;
 import view.ViewListener;
-
-import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 public class Presenter implements ViewListener {
@@ -23,14 +21,26 @@ public class Presenter implements ViewListener {
     	Backtracking backtracking = new Backtracking(_tablero);
     	return backtracking.verificarTableroValidoConMensaje();
     }
-
+	
 	@Override
-	public boolean resolverSudoku(JTextField[][] celdas) {
-		actualizarTableroPresenterPor(celdas);
-		Backtracking backtracking = new Backtracking(_tablero);
-		boolean resolucionDeExito = backtracking.resolverSudoku();
-			if(resolucionDeExito) _vista.mostrarTablero(backtracking.getTableroResuelto());
-		return resolucionDeExito;
+	public boolean encontrarSolucionesSudoku(JTextField[][] celdas) {
+	    actualizarTableroPresenterPor(celdas);
+	    
+	    Backtracking backtracking = new Backtracking(_tablero);
+	    if(!backtracking.verificarTableroValido()) {
+	    	_vista.mostrarMensaje("El sudoku ingresado es inválido");
+	    	return false;
+	    }
+	    
+	    var soluciones = backtracking.resolverVarias(50);
+
+        if (soluciones.isEmpty()) {
+        	_vista.mostrarMensaje("No se encontraron soluciones.");
+            return false;
+        }
+
+	    _vista.mostrarListaDeSoluciones(soluciones);
+	    return true;
 	}
 	
 	private void actualizarTableroPresenterPor(JTextField[][] celdas) {	
@@ -41,6 +51,19 @@ public class Presenter implements ViewListener {
 			}
 		}
 	}
+	
+    @Override
+    public void mostrarSolucion() {
+        Backtracking backtracking = new Backtracking(_tablero);
+        var soluciones = backtracking.resolverVarias(50);
+
+        if (soluciones.isEmpty()) {
+        	_vista.mostrarMensaje("No hay soluciones.");
+            return;
+        }
+
+        _vista.mostrarListaDeSoluciones(soluciones);
+    }
     
     @Override
     public void crearSudokuAleatorioConPistas(int cantPistas) {
@@ -48,28 +71,6 @@ public class Presenter implements ViewListener {
         _tablero.generarTableroAleatorioDeValoresIngresados(cantPistas);
         _vista.mostrarTablero(_tablero.getTablero());
         _vista.mostrarMensaje("Sudoku generado con " + cantPistas + " pistas.");
-    }
-    
-    @Override
-    public void mostrarSolucion() {
-    	String input = JOptionPane.showInputDialog(null, "¿Cuántas soluciones querés ver?");
-        if (input == null) return;
-        
-        if (!input.matches("\\d+")) {
-            JOptionPane.showMessageDialog(null, "Número inválido");
-            return;
-        }
-        int cantidad= Integer.parseInt(input);
-        
-        Backtracking backtracking = new Backtracking(_tablero);
-        var soluciones = backtracking.resolverVarias(cantidad);
-
-        if (soluciones.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "No hay soluciones.");
-            return;
-        }
-
-        _vista.mostrarListaDeSoluciones(soluciones);
     }
 
 }

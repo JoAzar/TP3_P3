@@ -6,6 +6,7 @@ import java.util.List;
 import java.awt.*;
 import java.text.NumberFormat;
 
+@SuppressWarnings("serial")
 public class View extends JFrame {
 	private JPanel _panelPrincipal;
 	private JPanel _contenedorBotones;
@@ -15,16 +16,16 @@ public class View extends JFrame {
     private JPanel _panelDeOpcionDeTableroAleatorio;
 	private ViewListener _listener;
     private JTextField[][] _celdas = new JTextField[9][9];
-    private JList<String> listaSoluciones;
-    private DefaultListModel<String> modeloLista;
-    private List<int [][]>solucionesActuales;
+    private JList<String> _listaSoluciones;
+    private DefaultListModel<String> _modeloLista;
+    private List<int [][]> _solucionesActuales;
     
     public View() {
 		initialize();
     }
     
     private void initialize() {
-        setTitle("< Juegazos.coso >");
+        setTitle("Resolución de Sudokus");
 		setBounds(100, 100, 600, 560); 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         _panelPrincipal = new JPanel(new CardLayout());
@@ -178,10 +179,11 @@ public class View extends JFrame {
 		botonParaVerificarTableroRandom.addActionListener(e -> {
 	        String mensajeVerificacion = _listener.verificarValidezDelTableroConMensaje(_celdas);
 	        if("Tablero válido".equals(mensajeVerificacion)) {
-	            boolean resuelto = _listener.resolverSudoku(_celdas);
-	            mensajeVerificacion = resuelto ? "Tablero resuelto correctamente" : "Los valores ingresados no pertenecen a un tablero válido";
+	        	mostrarMensaje("Sudoku resuelto correctamente");
 	        }
-	        msjDelResultadoDeLaVerificacionDelTablero(mensajeVerificacion);
+	        else {
+	        	mostrarMensaje("No existen soluciones para el sudoku ingresado.");
+	        }
 	    });	
 	}
 
@@ -221,9 +223,9 @@ public class View extends JFrame {
 
 	private void accionDelBotonResolverTablero(JButton btnResolverTablero) {
 		btnResolverTablero.addActionListener(e -> {
-	        boolean resuelto = _listener.resolverSudoku(_celdas);
+	        boolean resuelto = _listener.encontrarSolucionesSudoku(_celdas);
 	        String mensaje = resuelto ? "Tablero resuelto correctamente" : "El tablero no se puede resolver";
-	        msjDelResultadoDeLaVerificacionDelTablero(mensaje);
+	        mostrarMensaje(mensaje);
 	    });
 	}
 	
@@ -310,36 +312,37 @@ public class View extends JFrame {
         JOptionPane.showMessageDialog(this, mensaje);
     }
     
+    public String inputDeUsuario(String mensaje) {
+    	return JOptionPane.showInputDialog(null, mensaje);
+    }
+    
     public void crearListener(ViewListener listener) {
         this._listener = listener;
     }
     
-    public void msjDelResultadoDeLaVerificacionDelTablero(String mensaje) {
-        JOptionPane.showMessageDialog(null, mensaje, "El tablero es ", JOptionPane.INFORMATION_MESSAGE);
-    }
     public void mostrarListaDeSoluciones(List<int[][]> soluciones) {
-        this.solucionesActuales = soluciones;
+        this._solucionesActuales = soluciones;
 
         JDialog ventana = new JDialog(this, "Soluciones", false);
         ventana.setSize(250, 400);
         ventana.setLayout(new BorderLayout());
 
-        modeloLista = new DefaultListModel<>();
+        _modeloLista = new DefaultListModel<>();
 
         for (int i = 0; i < soluciones.size(); i++) {
-            modeloLista.addElement("Solución " + (i + 1));
+            _modeloLista.addElement("Solución " + (i + 1));
         }
 
-        listaSoluciones = new JList<>(modeloLista);
+        _listaSoluciones = new JList<>(_modeloLista);
 
-        listaSoluciones.addListSelectionListener(e -> {
+        _listaSoluciones.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
-                int index = listaSoluciones.getSelectedIndex();
-                mostrarTablero(solucionesActuales.get(index));
+                int index = _listaSoluciones.getSelectedIndex();
+                mostrarTablero(_solucionesActuales.get(index));
             }
         });
 
-        ventana.add(new JScrollPane(listaSoluciones), BorderLayout.CENTER);
+        ventana.add(new JScrollPane(_listaSoluciones), BorderLayout.CENTER);
         ventana.setVisible(true);
     }
 

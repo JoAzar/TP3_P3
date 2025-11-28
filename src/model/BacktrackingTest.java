@@ -1,112 +1,106 @@
 package model;
 
 import org.junit.Test;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
+import java.util.List;
 
 public class BacktrackingTest {
 	Tablero _tablero = new Tablero(9);
 	Backtracking _backtracking = new Backtracking(_tablero);
 	
+
+    @Test
+    public void noHayDuplicadosEnTableroVacioTest() {
+        assertTrue(_backtracking.verificarTableroValido());
+    }
+	
 	@Test
-	public void existeValorDuplicadoEnFila() {
+	public void existeDuplicadoEnFilaTest() {
 		_tablero.setValor(0, 0, 5);
 		_tablero.setValor(0, 1, 5);
 		
-		assertTrue(_backtracking.valorDuplicadoEnFila());
+		assertTrue(_backtracking.hayDuplicadoEnFila());
+		assertFalse(_backtracking.verificarTableroValido());
 	}
 	
 	@Test
-	public void existeValorDuplicadoEnColumna() {
+	public void existeDuplicadoEnColumnaTest() {
 		_tablero.setValor(0, 0, 3);
 		_tablero.setValor(1, 0, 3);
 		
-		assertTrue(_backtracking.valorDuplicadoEnColumna());
+		assertTrue(_backtracking.hayDuplicadoEnColumna());
+		assertFalse(_backtracking.verificarTableroValido());
 	}
 	
-	@Test
-	public void existeValorRepetidoEnFila() {
-		_tablero.setValor(0, 0, 2);
-		_tablero.setValor(1, 0, 3);
-		_tablero.setValor(2, 0, 2);
-		
-		assertTrue(_backtracking.existeValorRepetidoEnFila(2));
-	}
-	
-	@Test
-	public void existeValorRepetidoEnColumna() {
-		_tablero.setValor(0, 0, 2);
-		_tablero.setValor(0, 1, 1);
-		_tablero.setValor(0, 2, 2);
-		
-		assertTrue(_backtracking.existeValorRepetidoEnColumna(2));
-	}
+    @Test
+    public void duplicadoEnSubcuadriculaTest() {
+        _tablero.setValor(1, 1, 3);
+        _tablero.setValor(2, 0, 3);
+
+        assertTrue(_backtracking.hayDuplicadoEnCuadricula());
+        assertFalse(_backtracking.verificarTableroValido());
+    }
 	
 	@Test
 	public void tableroValido() {
 		assertTrue(_backtracking.verificarTableroValido());
 	}
 	
-	@Test
-	public void validarFila() {
-		_tablero.setValor(0, 0, 5);
-		_tablero.setValor(0, 1, 5);
-
-	    assertTrue(_backtracking.validarFila(0, 1, 5));
-	    assertFalse(_backtracking.validarFila(0, 2, 3));
-	}
-
-	@Test
-	public void validarColumna() {
-		_tablero.setValor(0, 0, 7);
-		_tablero.setValor(1, 0, 7);
-
-	    assertTrue(_backtracking.validarColumna(1, 0, 7));
-	    assertFalse(_backtracking.validarColumna(2, 0, 5));
-	}
-
-	@Test
-	public void validarCuadricula() {
-		_tablero.setValor(0, 0, 9);
-		_tablero.setValor(1, 1, 9);
-
-	    assertTrue(_backtracking.validarCuadricula(0, 1, 9));
-	    assertFalse(_backtracking.validarCuadricula(2, 2, 1));
-	}
-	
-	
     @Test
-    public void resolverTableroVacio() {
-        boolean exito = _backtracking.resolverSudoku();
-        
-        assertTrue(exito);
-        assertTrue(_backtracking.verificarTableroValido());
+    public void verificarTableroValidoConMensajeTest() {
+        _tablero.setValor(0, 0, 4);
+        _tablero.setValor(0, 2, 4);
+
+        assertEquals("Hay un valor duplicado en la fila", _backtracking.verificarTableroValidoConMensaje());
     }
 
     @Test
-    public void resolverTableroParcial() {
-		_tablero.setValor(0, 0, 5);
-		_tablero.setValor(0, 1, 3);
-		_tablero.setValor(1, 0, 6);
-		_tablero.setValor(4, 4, 7);
-		_tablero.setValor(8, 8, 9);
-        _backtracking = new Backtracking(_tablero);
-        
-        boolean exito = _backtracking.resolverSudoku();
-        
-        assertTrue(exito);
-        assertTrue(_backtracking.verificarTableroValido());
+    public void resolverVariasEncuentraUnaSolucionTest() {
+        crearSudokuSimple(_tablero);
+        List<int[][]> soluciones = _backtracking.resolverVarias(1);
+
+        assertEquals(1, soluciones.size());
     }
 
     @Test
-    public void tableroSinSolucion() {
-		_tablero.setValor(0, 0, 5);
-		_tablero.setValor(0, 1, 5);
-        _backtracking = new Backtracking(_tablero);
+    public void resolverVariasDevuelveSolucionesDistintasTest() {
+        crearSudokuSimple(_tablero);
+        List<int[][]> soluciones = _backtracking.resolverVarias(2);
 
-        boolean exito = _backtracking.resolverSudoku();
-        
-        assertFalse(exito);
+        assertNotSame(soluciones.get(0), soluciones.get(1));
     }
-    
+
+    @Test
+    public void resolverNoModificaTableroOriginalTest() {
+        crearSudokuSimple(_tablero);
+        int[][] copiaOriginal = _tablero.getTablero();
+
+        _backtracking.resolverVarias(1);
+
+        assertArrayEquals(copiaOriginal, _tablero.getTablero());
+    }
+
+    private void crearSudokuSimple(Tablero t) {
+        int[][] sudoku = {
+            {0,0,0, 0,0,0, 0,0,0},
+            {0,0,0, 0,0,0, 0,0,0},
+            {0,0,0, 0,0,0, 0,0,0},
+
+            {0,0,0, 0,0,0, 0,0,0},
+            {0,0,0, 5,0,0, 0,0,0},
+            {0,0,0, 0,0,0, 0,0,0},
+
+            {0,0,0, 0,0,0, 0,0,0},
+            {0,0,0, 0,0,0, 0,0,0},
+            {0,0,0, 0,0,0, 0,0,0},
+        };
+
+        for (int i = 0; i < 9; i++)
+            for (int j = 0; j < 9; j++)
+                t.setValor(i, j, sudoku[i][j]);
+    }
 }
