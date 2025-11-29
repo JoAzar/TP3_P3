@@ -14,13 +14,11 @@ public class Backtracking {
 
     public List<int[][]> resolverVarias(int limite) {
         _soluciones.clear();
-        if(!verificarTableroValido()) return _soluciones;
         resolverHastaLimite(0, 0, limite);
         return _soluciones;
     }
 
     private void resolverHastaLimite(int fila, int col, int limite) {
-    	
         if (_soluciones.size() >= limite) return;
 
         if (fila == 9) {
