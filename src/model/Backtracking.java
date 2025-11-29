@@ -14,6 +14,7 @@ public class Backtracking {
 
     public List<int[][]> resolverVarias(int limite) {
         _soluciones.clear();
+        if(!verificarTableroValido()) return _soluciones;
         resolverHastaLimite(0, 0, limite);
         return _soluciones;
     }
