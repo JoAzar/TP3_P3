@@ -1,10 +1,7 @@
 package model;
 
 import org.junit.Test;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import java.util.List;
 
@@ -47,41 +44,33 @@ public class BacktrackingTest {
 	
 	@Test
 	public void tableroValido() {
+        _tablero.setValor(0, 0, 4);
+        _tablero.setValor(1, 3, 7);
+        _tablero.setValor(4, 4, 9);
 		assertTrue(_backtracking.verificarTableroValido());
 	}
-	
-    @Test
-    public void verificarTableroValidoConMensajeTest() {
-        _tablero.setValor(0, 0, 4);
-        _tablero.setValor(0, 2, 4);
-
-        assertEquals("Hay un valor duplicado en la fila", _backtracking.verificarTableroValidoConMensaje());
-    }
-
-    @Test
-    public void resolverVariasEncuentraUnaSolucionTest() {
-        crearSudokuSimple(_tablero);
-        List<int[][]> soluciones = _backtracking.resolverVarias(1);
-
-        assertEquals(1, soluciones.size());
-    }
 
     @Test
     public void resolverVariasDevuelveSolucionesDistintasTest() {
         crearSudokuSimple(_tablero);
-        List<int[][]> soluciones = _backtracking.resolverVarias(2);
-
-        assertNotSame(soluciones.get(0), soluciones.get(1));
-    }
-
-    @Test
-    public void resolverNoModificaTableroOriginalTest() {
-        crearSudokuSimple(_tablero);
-        int[][] copiaOriginal = _tablero.getTablero();
-
-        _backtracking.resolverVarias(1);
-
-        assertArrayEquals(copiaOriginal, _tablero.getTablero());
+        
+        List<Tablero> soluciones = _backtracking.resolverVarias();
+        
+        assertTrue(soluciones.size() >= 2);
+        
+        Tablero sol1 = soluciones.get(0);
+        Tablero sol2 = soluciones.get(1);
+        
+        boolean sonDistintas = false;
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (sol1.getValor(i, j) != sol2.getValor(i, j)) {
+                    sonDistintas = true;
+                }
+            }
+        }
+        
+        assertTrue(sonDistintas);
     }
 
     private void crearSudokuSimple(Tablero t) {

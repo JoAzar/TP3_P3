@@ -2,6 +2,7 @@ package view;
 
 import javax.swing.*;
 import javax.swing.text.NumberFormatter;
+import model.Tablero;
 import java.util.List;
 import java.awt.*;
 import java.text.NumberFormat;
@@ -18,7 +19,8 @@ public class View extends JFrame {
     private JTextField[][] _celdas = new JTextField[9][9];
     private JList<String> _listaSoluciones;
     private DefaultListModel<String> _modeloLista;
-    private List<int [][]> _solucionesActuales;
+    private List<Tablero> _solucionesActuales;
+    JDialog _ventana;
     
     public View() {
 		initialize();
@@ -26,7 +28,7 @@ public class View extends JFrame {
     
     private void initialize() {
         setTitle("Resolución de Sudokus");
-		setBounds(100, 100, 600, 560); 
+		setBounds(360, 100, 600, 560); 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         _panelPrincipal = new JPanel(new CardLayout());
         getContentPane().add(_panelPrincipal);
@@ -46,7 +48,7 @@ public class View extends JFrame {
         _panelMenu.add(tituloDelInicioDelJuego);
         
         JButton btnTableroVacio = new JButton("Tablero vacío");
-        configurarTamanioDelBotonTableroVacio(btnTableroVacio);
+        configurarBotonTableroVacio(btnTableroVacio);
         accionDelBotonTableroVacio(btnTableroVacio);
         
         _panelMenu.add(btnTableroVacio);
@@ -58,39 +60,12 @@ public class View extends JFrame {
         _panelPrincipal.add(_panelMenu, "menu");
     }
     
-    private void accionDelBotonTableroVacio(JButton btnTableroVacio) {
-    	btnTableroVacio.addActionListener(e -> {
-        	setModoAleatorio(false);
-        	mostrarPantalla("tablero");
-        });		
+	private void noPermitirSenialarSobreElPanel(JTextPane panelSeleccionado) {
+		panelSeleccionado.setEditable(false);   
+		panelSeleccionado.setHighlighter(null);
+		panelSeleccionado.setFocusable(false);
 	}
-    
-    private void accionDelBotonDeTableroSudokuRandom(JButton btnSudokuRandom) {
-    	btnSudokuRandom.addActionListener(e -> {
-            String input = JOptionPane.showInputDialog(this, "Ingrese la cantidad de pistas (1 a 81):");
-            	if(input != null && !input.isEmpty()) {
-            		try {
-            			int cantidadDePistas = Integer.parseInt(input);
-            			if(cantidadDePistas < 1 || cantidadDePistas > 81) {
-            				mostrarMensaje("Debe ingresar un número válido");
-            			}else{
-            				_listener.crearSudokuAleatorioConPistas(cantidadDePistas);
-                			setModoAleatorio(true);
-                			mostrarPantalla("tablero");
-            			}
-            			
-            		} catch (NumberFormatException ex) {
-            			mostrarMensaje("Debe ingresar un número válido");
-                    }
-            	}
-            });		
-	}
-
-	private void configurarTamanioDelBotonDeTableroSudokuRandom(JButton btnSudokuRandom) {
-    	btnSudokuRandom.setBounds(193, 342, 202, 54);
-        btnSudokuRandom.setFont(new Font("Arial", Font.BOLD, 14));		
-	}
-
+	
 	private void configurarTamanioDelTituloDeInicioDelJuego(JTextPane tituloDelInicioDelJuego) {
         tituloDelInicioDelJuego.setBounds(143, 138, 311, 60);
         tituloDelInicioDelJuego.setContentType("text/html");
@@ -109,6 +84,44 @@ public class View extends JFrame {
         tituloDelInicioDelJuego.setAlignmentX(CENTER_ALIGNMENT);
         tituloDelInicioDelJuego.setAlignmentY(CENTER_ALIGNMENT);
 	}
+	
+    private void configurarBotonTableroVacio(JButton btnTableroVacio) {
+    	btnTableroVacio.setBounds(207, 261, 173, 47);
+        btnTableroVacio.setFont(new Font("Arial", Font.BOLD, 14));
+	} 
+    
+    private void accionDelBotonTableroVacio(JButton btnTableroVacio) {
+    	btnTableroVacio.addActionListener(e -> {
+        	setModoAleatorio(false);
+        	mostrarPantalla("tablero");
+        });		
+	}
+    
+	private void configurarTamanioDelBotonDeTableroSudokuRandom(JButton btnSudokuRandom) {
+    	btnSudokuRandom.setBounds(193, 342, 202, 54);
+        btnSudokuRandom.setFont(new Font("Arial", Font.BOLD, 14));		
+	}
+    
+    private void accionDelBotonDeTableroSudokuRandom(JButton btnSudokuRandom) {
+    	btnSudokuRandom.addActionListener(e -> {
+            String input = JOptionPane.showInputDialog(this, "Ingrese la cantidad de pistas (1 a 40):");
+            	if(input != null && !input.isEmpty()) {
+            		try {
+            			int cantidadDePistas = Integer.parseInt(input);
+            			if(cantidadDePistas < 1 || cantidadDePistas > 40) {
+            				mostrarMensaje("Debe ingresar un número válido");
+            			}else{
+            				_listener.crearSudokuAleatorioConPistas(cantidadDePistas);
+                			setModoAleatorio(true);
+                			mostrarPantalla("tablero");
+            			}
+            			
+            		} catch (NumberFormatException ex) {
+            			mostrarMensaje("Debe ingresar un número válido");
+                    }
+            	}
+            });		
+	}
 
 	private void crearTablero() {
     	_panelTablero = new JPanel();
@@ -122,38 +135,40 @@ public class View extends JFrame {
     	_panelBtnManual = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
     	
     	JButton btnResolverTablero = new JButton("Resolver tablero");
-    	configurarTamanioDeBotonResolverTablero(btnResolverTablero);
+    	configurarBotonResolverTablero(btnResolverTablero);
     	accionDelBotonResolverTablero(btnResolverTablero);
     	noPermitirSenialarSobreElBoton(btnResolverTablero);
     	
     	JButton btnVerificar = new JButton("Verificar tablero");
-    	configurarTamanioDeBotonVerificarTablero(btnVerificar);
+    	configurarBotonVerificarTablero(btnVerificar);
     	accionDelBotonVerificarTablero(btnVerificar);
     	noPermitirSenialarSobreElBoton(btnVerificar);
+    	
+    	JButton btnReiniciarTablero = new JButton("Reiniciar tablero");
+    	configurarBotonReiniciarTablero(btnReiniciarTablero);
+    	noPermitirSenialarSobreElBoton(btnReiniciarTablero);
+    	accionDelBotonReiniciarTablero(btnReiniciarTablero, btnResolverTablero);
 
     	JButton btnVolverAlMenuDeInicio = new JButton("Menú principal");
-    	configurarTamanioDelBotonVolver(btnVolverAlMenuDeInicio);
+    	configurarBotonVolver(btnVolverAlMenuDeInicio);
     	accionDelBotonVolverAlTablero(btnVolverAlMenuDeInicio);
     	noPermitirSenialarSobreElBoton(btnVolverAlMenuDeInicio);
     	
-    	construirPanelParaTableroAleatorio(btnResolverTablero, btnVolverAlMenuDeInicio);
+    	construirPanelParaTableroManual(btnResolverTablero, btnReiniciarTablero, btnVolverAlMenuDeInicio);
     	
     	_panelDeOpcionDeTableroAleatorio = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
     	
     	JButton btnMostrarSolucion = new JButton("Mostrar solución");
+    	configurarBotonMostrarSolucionDelTableroRandom(btnMostrarSolucion);
     	accionDelBotonMostrarSolucion(btnMostrarSolucion);
     	noPermitirSenialarSobreElBoton(btnMostrarSolucion);
     	
     	JButton randomBtnVolver = new JButton("Menú principal");
-    	configurarTamanioDelBotonVolverDelTableroRandom(randomBtnVolver);
+    	configurarBotonVolverDelTableroRandom(randomBtnVolver);
     	accionDelBotonVolverDelTableroRandom(randomBtnVolver);
     	noPermitirSenialarSobreElBoton(randomBtnVolver);
-
-    	JButton botonParaVerificarTablero = new JButton("Verificar el tablero");
-    	accionDelBotonVerificarTableroRandom(botonParaVerificarTablero);
-    	noPermitirSenialarSobreElBoton(botonParaVerificarTablero);
         
-    	construirPanelParaTableroAleatorio(btnMostrarSolucion, randomBtnVolver, botonParaVerificarTablero);
+    	construirPanelParaTableroAleatorio(btnMostrarSolucion, randomBtnVolver);
 
         _contenedorBotones = new JPanel(new CardLayout());
         _contenedorBotones.add(_panelBtnManual, "tablero vacío");
@@ -164,91 +179,11 @@ public class View extends JFrame {
     	_panelPrincipal.add(_panelTablero, "tablero");
     }
 	
-	private void construirPanelParaTableroAleatorio(JButton btnResolverTablero, JButton btnVolverAlMenuDeInicio) {
-		_panelBtnManual.add(btnResolverTablero);
-    	_panelBtnManual.add(btnVolverAlMenuDeInicio);		
-	}
-
-	private void construirPanelParaTableroAleatorio(JButton btnMostrarSolucion, JButton randomBtnVolver, JButton botonParaVerificarTablero) {
-		_panelDeOpcionDeTableroAleatorio.add(btnMostrarSolucion);
-    	_panelDeOpcionDeTableroAleatorio.add(randomBtnVolver);
-    	_panelDeOpcionDeTableroAleatorio.add(botonParaVerificarTablero);
-	}
-
-	private void accionDelBotonVerificarTableroRandom(JButton botonParaVerificarTableroRandom) {
-		botonParaVerificarTableroRandom.addActionListener(e -> {
-	        String mensajeVerificacion = _listener.verificarValidezDelTableroConMensaje(_celdas);
-	        if("Tablero válido".equals(mensajeVerificacion)) {
-	        	mostrarMensaje("Sudoku resuelto correctamente");
-	        }
-	        else {
-	        	mostrarMensaje("No existen soluciones para el sudoku ingresado.");
-	        }
-	    });	
-	}
-
-	private void accionDelBotonVolverDelTableroRandom(JButton randomBtnVolver) {
-		randomBtnVolver.addActionListener(e -> {
-    		limpiarTablero();
-    		mostrarPantalla("menu");
-    	});		
-	}
-
-	private void configurarTamanioDelBotonVolverDelTableroRandom(JButton randomBtnVolver) {
-		randomBtnVolver.setFont(new Font("Arial", Font.BOLD, 12));		
-	}
-
-	private void accionDelBotonMostrarSolucion(JButton btnMostrarSolucion) {
-		btnMostrarSolucion.addActionListener(e -> _listener.mostrarSolucion());		
-	}
-
-	private void accionDelBotonVolverAlTablero(JButton manualBtnVolver) {
-		manualBtnVolver.addActionListener(e -> {
-    		limpiarTablero();
-    		mostrarPantalla("menu");
-    	});		
-	}
-
-	private void accionDelBotonVerificarTablero(JButton btnVerificar) {
-		btnVerificar.addActionListener(e -> { _listener.verificarValidezDelTableroConMensaje(_celdas);});		
-	}
-
-	private void configurarTamanioDeBotonVerificarTablero(JButton btnVerificar) {
-		btnVerificar.setFont(new Font("Arial", Font.BOLD, 12));		
-	}
-
-	private void configurarTamanioDeBotonResolverTablero(JButton btnResolverTablero) {
-		btnResolverTablero.setFont(new Font("Arial", Font.BOLD, 12));		
-	}
-
-	private void accionDelBotonResolverTablero(JButton btnResolverTablero) {
-		btnResolverTablero.addActionListener(e -> {
-	        boolean resuelto = _listener.encontrarSolucionesSudoku(_celdas);
-	        String mensaje = resuelto ? "Tablero resuelto correctamente" : "El tablero no se puede resolver";
-	        mostrarMensaje(mensaje);
-	    });
-	}
-	
-	private void noPermitirSenialarSobreElPanel(JTextPane panelSeleccionado) {
-		panelSeleccionado.setEditable(false);   
-		panelSeleccionado.setHighlighter(null);
-		panelSeleccionado.setFocusable(false);
-	}
-    
     private void configurarTamanioDelPanelCentral(JPanel panelCentral) {
     	panelCentral.setPreferredSize(new Dimension(450, 450));
     	panelCentral.setBackground(Color.BLACK);		
 	}
-
-    private void configurarTamanioDelBotonVolver(JButton manualBtnVolver) {
-    	manualBtnVolver.setFont(new Font("Arial", Font.BOLD, 12));
-	}
     
-    private void configurarTamanioDelBotonTableroVacio(JButton btnTableroVacio) {
-    	btnTableroVacio.setBounds(207, 261, 173, 47);
-        btnTableroVacio.setFont(new Font("Arial", Font.BOLD, 14));
-	} 
-
 	private void armarCuadroDelTablero(JPanel panelCentro) {
 		NumberFormat formato = NumberFormat.getIntegerInstance();
     	NumberFormatter formatter = new NumberFormatter(formato);
@@ -272,60 +207,146 @@ public class View extends JFrame {
     	}
     }
     
+	private void configurarBotonResolverTablero(JButton btnResolverTablero) {
+		btnResolverTablero.setFont(new Font("Arial", Font.BOLD, 12));		
+	}
+	
+	private void accionDelBotonResolverTablero(JButton btnResolverTablero) {
+		btnResolverTablero.addActionListener(e -> {
+	        boolean resuelto = _listener.encontrarSolucionesSudoku(_celdas);
+	        
+	        if(resuelto) {
+		        btnResolverTablero.setEnabled(false);
+		        mostrarMensaje("Tablero resuelto correctamente");
+	        }
+	    });
+	}
+	
     private void noPermitirSenialarSobreElBoton(JButton panelSeleccionado) {
 		panelSeleccionado.setFocusable(false);
 	}
     
-    private void mostrarPantalla(String pantalla) {
-    	CardLayout cardlayout = (CardLayout) (_panelPrincipal.getLayout());
-    	cardlayout.show(_panelPrincipal, pantalla);
-    }
+	private void configurarBotonVerificarTablero(JButton btnVerificar) {
+		btnVerificar.setFont(new Font("Arial", Font.BOLD, 12));		
+	}
+	
+	private void accionDelBotonVerificarTablero(JButton btnVerificar) {
+		btnVerificar.addActionListener(e -> { _listener.verificarValidezDelTableroConMensaje(_celdas);});		
+	}
+	
+	private void configurarBotonReiniciarTablero(JButton btnReiniciar) {
+    	btnReiniciar.setFont(new Font("Arial", Font.BOLD, 12));
+	}
+
+	private void accionDelBotonReiniciarTablero(JButton btnReiniciar, JButton btnResolverTablero) {
+		btnReiniciar.addActionListener(e -> reiniciarTablero(btnResolverTablero));
+	}
+	
+	private void reiniciarTablero(JButton btnResolverTablero) {
+		if(_ventana != null) {
+			cerrarVentanaDeSoluciones();
+		}
+		
+		for (int fila = 0; fila < 9; fila++) {
+			for (int columna = 0; columna < 9; columna++) {
+	            JFormattedTextField celda = (JFormattedTextField) _celdas[fila][columna];
+	            celda.setValue(null);
+	            celda.setEditable(true);
+			}
+		}
+		btnResolverTablero.setEnabled(true);
+	}
+	
+    private void configurarBotonVolver(JButton manualBtnVolver) {
+    	manualBtnVolver.setFont(new Font("Arial", Font.BOLD, 12));
+	}
     
+	private void accionDelBotonVolverAlTablero(JButton manualBtnVolver) {
+		manualBtnVolver.addActionListener(e -> {
+			if(_ventana != null) {
+				cerrarVentanaDeSoluciones();
+			}
+    		limpiarTablero();
+    		mostrarPantalla("menu");
+    	});		
+	}
+	
+	private void construirPanelParaTableroManual(JButton btnResolverTablero, JButton btnReiniciarTablero,
+			JButton btnVolverAlMenuDeInicio) {
+		_panelBtnManual.add(btnResolverTablero);
+    	_panelBtnManual.add(btnReiniciarTablero);
+    	_panelBtnManual.add(btnVolverAlMenuDeInicio);		
+	}
+	
+	private void configurarBotonMostrarSolucionDelTableroRandom(JButton btnMostrarSolucion){
+		btnMostrarSolucion.setFont(new Font("Arial", Font.BOLD, 12));
+	}
+
+	private void accionDelBotonMostrarSolucion(JButton btnMostrarSolucion) {
+		btnMostrarSolucion.addActionListener(e -> {
+			btnMostrarSolucion.setEnabled(false);
+			_listener.mostrarSolucion();
+		});		
+	}
+	
+	private void configurarBotonVolverDelTableroRandom(JButton randomBtnVolver) {
+		randomBtnVolver.setFont(new Font("Arial", Font.BOLD, 12));		
+	}
+	
+	private void accionDelBotonVolverDelTableroRandom(JButton randomBtnVolver) {
+		randomBtnVolver.addActionListener(e -> {
+			if(_ventana != null) {
+				cerrarVentanaDeSoluciones();
+			}
+    		limpiarTablero();
+    		mostrarPantalla("menu");
+    	});		
+	}
+	
     private void limpiarTablero() {
         _panelTablero.removeAll();
         crearTablero();
     }
     
-    public void mostrarTablero(int[][] tablero) {
-        for(int fila = 0; fila < tablero.length; fila++) {
-        	for(int columna = 0; columna < tablero.length; columna++) {
-        		int valor = tablero[fila][columna];
-        		if(valor == 0) 
-        			_celdas[fila][columna].setText("");
-        		else 
-        			_celdas[fila][columna].setText(String.valueOf(valor));
-                	_celdas[fila][columna].setEditable(false);
-        	}
-        }
+    private void mostrarPantalla(String pantalla) {
+    	CardLayout cardlayout = (CardLayout) (_panelPrincipal.getLayout());
+    	cardlayout.show(_panelPrincipal, pantalla);
     }
+	
+	private void construirPanelParaTableroAleatorio(JButton btnMostrarSolucion, JButton randomBtnVolver) {
+		_panelDeOpcionDeTableroAleatorio.add(btnMostrarSolucion);
+    	_panelDeOpcionDeTableroAleatorio.add(randomBtnVolver);
+	}
     
     private void setModoAleatorio(boolean esAleatorio) {
     	CardLayout cardlayout = (CardLayout) _contenedorBotones.getLayout();
     	cardlayout.show(_contenedorBotones, esAleatorio ? "tablero aleatorio": "tablero vacío");
+    	modificarEditabilidadDeCeldas(!esAleatorio);
+    }
+    
+    private void modificarEditabilidadDeCeldas(boolean esEditable) {
         for(int fila = 0; fila < 9; fila++) {
-            for(int columna = 0; columna < 9; columna++)
-                _celdas[fila][columna].setEditable(true);
+            for(int columna = 0; columna < 9; columna++) {
+            	JFormattedTextField celda = (JFormattedTextField) _celdas[fila][columna];
+                celda.setEditable(esEditable);
+            }
         }
     }
+    
+    private void cerrarVentanaDeSoluciones() {
+    	_ventana.dispose();
+    	_ventana = null;
+		_listaSoluciones.removeAll();
+		_solucionesActuales.clear();
+    }
+    
+    public void mostrarListaDeSoluciones(List<Tablero> soluciones) {
+        _solucionesActuales = soluciones;
+        
+        _ventana = new JDialog(this, "Soluciones", false);
 
-    public void mostrarMensaje(String mensaje) {
-        JOptionPane.showMessageDialog(this, mensaje);
-    }
-    
-    public String inputDeUsuario(String mensaje) {
-    	return JOptionPane.showInputDialog(null, mensaje);
-    }
-    
-    public void crearListener(ViewListener listener) {
-        this._listener = listener;
-    }
-    
-    public void mostrarListaDeSoluciones(List<int[][]> soluciones) {
-        this._solucionesActuales = soluciones;
-
-        JDialog ventana = new JDialog(this, "Soluciones", false);
-        ventana.setSize(250, 400);
-        ventana.setLayout(new BorderLayout());
+        _ventana.setBounds(120, 180, 250, 400);
+        _ventana.setLayout(new BorderLayout());
 
         _modeloLista = new DefaultListModel<>();
 
@@ -342,9 +363,36 @@ public class View extends JFrame {
             }
         });
 
-        ventana.add(new JScrollPane(_listaSoluciones), BorderLayout.CENTER);
-        ventana.setVisible(true);
+        _ventana.add(new JScrollPane(_listaSoluciones), BorderLayout.CENTER);
+        _ventana.setVisible(true);
+    }
+    
+    public void mostrarTablero(Tablero tablero) {
+        for(int fila = 0; fila < tablero.length(); fila++) {
+        	for(int columna = 0; columna < tablero.length(); columna++) {
+        		JFormattedTextField celda = (JFormattedTextField) _celdas[fila][columna];
+        		int valor = tablero.getValor(fila, columna);
+        		if(valor == 0) {
+        			celda.setValue(null);
+        		}
+        		else {
+        			celda.setValue(valor);
+        		}
+        		celda.setEditable(false);
+        	}
+        }
     }
 
+    public void mostrarMensaje(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje);
+    }
+    
+    public String inputDeUsuario(String mensaje) {
+    	return JOptionPane.showInputDialog(null, mensaje);
+    }
+    
+    public void crearListener(ViewListener listener) {
+        this._listener = listener;
+    }
     
 }
